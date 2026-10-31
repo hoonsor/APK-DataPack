@@ -1,0 +1,11 @@
+# Vercel CLI 不看 .gitignore，機密與本機檔要在這裡排除（hoonsor-kit vercel-dotenvx-deploy）
+.env
+.env.*
+!.env.example
+.env.keys
+.claude
+.vercel
+node_modules
+.next
+.venv
+__pycache__

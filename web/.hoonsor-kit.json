@@ -1,0 +1,45 @@
+{
+    "pwa-shell":  {
+                      "version":  "1.1.0",
+                      "installed":  "2026-10-31",
+                      "files":  {
+                                    "src/app/apple-icon.tsx":  "2d6aa2040a964afb",
+                                    "src/app/icon.tsx":  "640ea931eb11e282",
+                                    "src/app/icons/[size]/route.tsx":  "b60b1a6f3b23095e",
+                                    "src/app/manifest.ts":  "cdfaf5e4696b2a77",
+                                    "src/components/AppShell.tsx":  "7c6d9b91041fd131",
+                                    "src/components/icons.tsx":  "7ed97293468983c3",
+                                    "src/components/Toast.tsx":  "5a5aa2b78438a9ba",
+                                    "src/lib/appConfig.ts":  "0f86195ff51e2f5b",
+                                    "src/lib/appIcon.tsx":  "3602a4022a625064",
+                                    "src/lib/nav.ts":  "77a75174a4903e43",
+                                    "src/styles/kit-shell.css":  "04e17c9d3fd4ee47"
+                                }
+                  },
+    "supabase-email-otp":  {
+                               "version":  "1.0.0",
+                               "installed":  "2026-10-31",
+                               "files":  {
+                                             "src/app/api/auth/logout/route.ts":  "046f9c58c217ba82",
+                                             "src/app/api/auth/otp/route.ts":  "218fe483472f2182",
+                                             "src/app/api/auth/verify/route.ts":  "d098d885498f4b44",
+                                             "src/app/login/page.tsx":  "54134abdb2ca4565",
+                                             "src/lib/auth/allowlist.ts":  "a1af2da800ce10ea",
+                                             "src/lib/auth/http.ts":  "21e051d7a73af065",
+                                             "src/lib/auth/member.ts":  "af0e2566f5e9ddd1",
+                                             "src/lib/auth/schema.ts":  "e0bbe8089e85809c",
+                                             "src/lib/supabase/cookie.ts":  "71753381d3f93c60",
+                                             "src/lib/supabase/server.ts":  "60818ee81773efd6",
+                                             "src/proxy.ts":  "dd7f41ff0752995b",
+                                             "supabase/migrations/00000000_app_members.sql":  "32bbb8b1b2e354a7"
+                                         }
+                           },
+    "vercel-dotenvx-deploy":  {
+                                  "version":  "1.0.0",
+                                  "installed":  "2026-10-31",
+                                  "files":  {
+                                                ".vercelignore":  "b09f250b88c7847d",
+                                                "scripts/vercel-env-push.mjs":  "b84aab66b099ddb8"
+                                            }
+                              }
+}

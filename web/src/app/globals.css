@@ -1,0 +1,69 @@
+@import "tailwindcss";
+@import "../styles/kit-shell.css";
+
+/*
+ * 資料包色票（唯一來源：docs/DESIGN.md，只有深色介面）
+ * kit-shell 的變數也改成同一套，登入頁與 Toast 才會一致
+ */
+:root,
+:root:not([data-theme="light"]) {
+  color-scheme: dark;
+  --t-bg: hsl(220 26% 11%);
+  --t-surface: hsl(220 24% 19%);
+  --t-surface-hi: hsl(220 22% 22%);
+  --t-panel: hsl(220 24% 16%);
+  --t-line: hsl(220 20% 28%);
+  --t-line-hi: hsl(220 20% 34%);
+  --t-text: hsl(220 25% 95%);
+  --t-text-soft: hsl(220 20% 86%);
+  --t-muted: hsl(220 15% 74%);
+  --t-ring: hsl(220 12% 58%);
+  --t-accent: hsl(172 55% 52%);
+  --t-star: hsl(38 90% 72%);
+  --t-overdue: hsl(0 80% 84%);
+  --t-ok: hsl(150 48% 62%);
+  --t-select-bg: hsl(172 40% 26%);
+  --t-select-line: hsl(172 55% 52%);
+
+  --bg: var(--t-bg);
+  --bg-glow-1: transparent;
+  --bg-glow-2: transparent;
+  --surface: var(--t-surface);
+  --surface-strong: var(--t-surface-hi);
+  --line: var(--t-line-hi);
+  --ink: var(--t-text);
+  --muted: var(--t-muted);
+  --accent: var(--t-accent);
+  --accent-soft: hsl(214 80% 70% / 0.16);
+  --accent-ink: hsl(222 30% 10%);
+  --accent-2: hsl(214 60% 55%);
+  --danger: var(--t-overdue);
+  --danger-soft: hsl(8 78% 70% / 0.14);
+  --ok: var(--t-ok);
+  --shadow: 0 1px 2px hsl(0 0% 0% / 0.3), 0 10px 30px -12px hsl(0 0% 0% / 0.6);
+}
+
+
+body { background: var(--t-bg); color: var(--t-text); font-family: var(--font-noto), system-ui, sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.top h1 { font-size: 26px; font-weight: 700; }
+.sub { color: var(--t-muted); font-size: 14px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pill { min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--t-line); background: var(--t-panel); color: var(--t-text-soft); font-size: 14px; cursor: pointer; }
+.pill[data-on="true"] { background: var(--t-select-bg); border-color: var(--t-select-line); color: hsl(172 70% 82%); font-weight: 700; }
+.pill.danger { color: var(--t-overdue); border-color: hsl(0 45% 45%); background: hsl(0 30% 20%); }
+.pill.primary { background: var(--t-accent); color: hsl(200 40% 10%); border-color: var(--t-accent); font-weight: 700; }
+.input { width: 100%; min-height: 48px; padding: 0 16px; border-radius: 20px; border: 1px solid var(--t-line-hi); background: var(--t-panel); color: var(--t-text); font-size: 15px; }
+.tablebox { overflow-x: auto; border: 1px solid var(--t-line); border-radius: 20px; margin-top: 12px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 14px; }
+.data th { text-align: left; color: var(--t-muted); font-weight: 500; padding: 12px; border-bottom: 1px solid var(--t-line); white-space: nowrap; }
+.data td { padding: 12px; border-bottom: 1px solid var(--t-line); vertical-align: top; }
+.data tr.row { cursor: pointer; }
+.data tr.row:hover { background: var(--t-panel); }
+.tag { color: var(--t-star); font-size: 12px; white-space: nowrap; }
+.panel { background: var(--t-surface); border: 1px solid var(--t-line); border-radius: 24px; padding: 18px; margin-top: 12px; display: grid; gap: 10px; }
+.panel label { display: grid; gap: 4px; color: var(--t-muted); font-size: 13px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.pager { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 12px; color: var(--t-muted); font-size: 14px; }
+.hit { background: var(--t-panel); border-radius: 16px; padding: 12px 14px; margin-top: 8px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }

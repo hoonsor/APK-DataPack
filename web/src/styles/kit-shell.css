@@ -1,0 +1,175 @@
+/*
+ * hoonsor-kit pwa-shell 設計 token 與元件樣式（Tailwind CSS 4）
+ * 用法：在 src/app/globals.css 的 @import "tailwindcss"; 下一行加上
+ *   @import "../styles/kit-shell.css";
+ * 元件樣式一定要放在 @layer components，Tailwind 工具類別（例如 w-full、px-3）才能覆寫。
+ */
+
+:root {
+  --bg: hsl(36 38% 96%);
+  --bg-glow-1: hsl(32 95% 70% / 0.28);
+  --bg-glow-2: hsl(174 55% 55% / 0.18);
+  --surface: hsl(0 0% 100% / 0.72);
+  --surface-strong: hsl(0 0% 100% / 0.92);
+  --line: hsl(30 18% 84%);
+  --ink: hsl(230 26% 15%);
+  --muted: hsl(228 9% 45%);
+  --accent: hsl(28 90% 50%);
+  --accent-soft: hsl(32 95% 52% / 0.14);
+  --accent-ink: hsl(0 0% 100%);
+  --accent-2: hsl(343 60% 50%);
+  --accent-2-soft: hsl(343 70% 56% / 0.12);
+  --accent-3: hsl(174 56% 34%);
+  --accent-3-soft: hsl(174 56% 40% / 0.12);
+  --danger: hsl(6 70% 52%);
+  --danger-soft: hsl(6 80% 56% / 0.12);
+  --ok: hsl(152 52% 36%);
+  --shadow: 0 1px 2px hsl(230 30% 20% / 0.05), 0 8px 28px -10px hsl(30 40% 30% / 0.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: hsl(232 24% 8%);
+    --bg-glow-1: hsl(30 90% 50% / 0.16);
+    --bg-glow-2: hsl(174 60% 45% / 0.12);
+    --surface: hsl(232 20% 14% / 0.66);
+    --surface-strong: hsl(232 20% 15% / 0.94);
+    --line: hsl(232 14% 24%);
+    --ink: hsl(36 30% 94%);
+    --muted: hsl(230 10% 64%);
+    --accent: hsl(34 95% 58%);
+    --accent-soft: hsl(34 95% 58% / 0.16);
+    --accent-ink: hsl(232 30% 10%);
+    --accent-2: hsl(343 80% 72%);
+    --accent-2-soft: hsl(343 80% 72% / 0.14);
+    --accent-3: hsl(172 58% 54%);
+    --accent-3-soft: hsl(172 58% 54% / 0.14);
+    --danger: hsl(8 85% 66%);
+    --danger-soft: hsl(8 85% 66% / 0.14);
+    --ok: hsl(152 55% 56%);
+    --shadow: 0 1px 2px hsl(0 0% 0% / 0.3), 0 10px 30px -12px hsl(0 0% 0% / 0.6);
+  }
+}
+
+/* 讓 bg-surface、text-muted、shadow-card 等工具類別可用 */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-soft: var(--accent-2-soft);
+  --color-accent-3: var(--accent-3);
+  --color-accent-3-soft: var(--accent-3-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --shadow-card: var(--shadow);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60rem 40rem at 110% -10%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(50rem 36rem at -20% 30%, var(--bg-glow-2), transparent 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+}
+
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .field {
+    width: 100%;
+    border-radius: 0.9rem;
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
+    padding: 0.7rem 0.9rem;
+    font-size: 1rem; /* 16px 以上，iOS 才不會自動放大 */
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    padding: 0.7rem 1.2rem;
+    font-weight: 600;
+    transition: transform 0.12s, opacity 0.15s, background 0.15s;
+  }
+  .btn:active {
+    transform: scale(0.96);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), color-mix(in hsl, var(--accent) 70%, var(--accent-2)));
+    color: var(--accent-ink);
+    box-shadow: 0 8px 20px -8px var(--accent);
+  }
+  .btn-ghost {
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--line) 0%, var(--surface-strong) 50%, var(--line) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 0.75rem;
+  }
+
+  .rise {
+    animation: rise 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

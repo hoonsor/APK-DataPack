@@ -108,6 +108,10 @@ class MainActivity : ComponentActivity() {
         val item = i.getStringExtra(EXTRA_ITEM)
         val source = i.getStringExtra(EXTRA_SOURCE)
         if (item != null || source != null) stack += Dest.Source(item, source, i.getStringExtra(EXTRA_CHUNK))
+        // LAB 預覽測試入口：adb 把圖放進 files/inbox 後，走跟分享一樣的流程
+        if (previewMode) i.getStringExtra("testInbox")?.let { name ->
+            Graph.scope.launch { Pipeline.enqueue(this@MainActivity, listOf(File(Media.inbox(this@MainActivity), name)), "test") }
+        }
         val uris: List<Uri> = when (i.action) {
             Intent.ACTION_SEND -> listOfNotNull(if (Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java) else @Suppress("DEPRECATION") i.getParcelableExtra(Intent.EXTRA_STREAM))
             Intent.ACTION_SEND_MULTIPLE -> (if (Build.VERSION.SDK_INT >= 33) i.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java) else @Suppress("DEPRECATION") i.getParcelableArrayListExtra(Intent.EXTRA_STREAM)).orEmpty()
