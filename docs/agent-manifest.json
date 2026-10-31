@@ -1,0 +1,217 @@
+{
+  "app": "賈維斯資料包",
+  "package": "tw.hoonsor.datapack",
+  "description": "倬的個人資料庫：名片、說明書、保固單、健檢報告與記住的事。回答查得到的資料並附來源，不回答一般知識。",
+  "api": 1,
+  "version": "0.0.0",
+  "actions": [
+    {
+      "examples": [
+        "資料包有哪些",
+        "我的名片有幾張",
+        "資料包現在有多少資料"
+      ],
+      "name": "pack_list",
+      "description": "列出所有資料包與各自筆數、待確認筆數。",
+      "risk": "read",
+      "title": "列出資料包",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "examples": [
+        "有沒有文具相關的廠商",
+        "除濕機濾網怎麼清",
+        "哪些保固快到期",
+        "上次膽固醇多少",
+        "保單幾號到期",
+        "會計師的電話是多少"
+      ],
+      "name": "pack_query",
+      "description": "查倬自己存的名片、說明書、保固單、健檢報告與記住的事，回答會附來源。一般知識不要用這個動作。回覆請保留「來源」那句。",
+      "risk": "read",
+      "title": "查資料包",
+      "params": {
+        "type": "object",
+        "properties": {"question": {
+          "description": "倬的問題，保留原話",
+          "type": "string"
+        }},
+        "required": ["question"]
+      }
+    },
+    {
+      "examples": [
+        "看原圖",
+        "打開那一頁",
+        "給我看來源"
+      ],
+      "name": "pack_source_open",
+      "description": "打開剛剛那個答案的原始照片或頁面，並標出答案所在的位置。",
+      "risk": "read",
+      "title": "看原圖",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "examples": [
+        "有幾筆待確認",
+        "資料包有沒有要核對的",
+        "還有什麼沒確認"
+      ],
+      "name": "review_list",
+      "description": "唸出有幾筆資料等人工核對。",
+      "risk": "read",
+      "title": "查待確認",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "examples": [
+        "掃名片",
+        "我要掃說明書",
+        "幫我拍這張保固單",
+        "開資料包掃描"
+      ],
+      "name": "capture_open",
+      "description": "打開掃描畫面，拍名片、說明書、保固單或健檢報告。",
+      "risk": "read",
+      "title": "開始掃描",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "examples": [
+        "打給晨光文具",
+        "打給林小姐",
+        "撥電話給會計師"
+      ],
+      "name": "contact_call",
+      "description": "從名片找人並開啟撥號畫面，由倬自己按撥出。",
+      "risk": "read",
+      "title": "打給聯絡人",
+      "params": {
+        "type": "object",
+        "properties": {"name": {
+          "description": "人名或公司名，可不完整",
+          "type": "string"
+        }},
+        "required": ["name"]
+      }
+    },
+    {
+      "examples": [
+        "記住保單 3 月 15 日到期",
+        "幫我記一下車位是 B2 的 37 號",
+        "記住 Wi-Fi 改成 5G 那組"
+      ],
+      "name": "fact_remember",
+      "description": "記下一件零散事實；同一主題再講一次會更新，舊內容保留。",
+      "risk": "reversible",
+      "title": "記住",
+      "params": {
+        "type": "object",
+        "properties": {
+          "due_date": {
+            "description": "到期日 yyyy-MM-dd，有提到才填",
+            "type": "string"
+          },
+          "topic": {
+            "description": "主題，短詞，例如保單到期日",
+            "type": "string"
+          },
+          "content": {
+            "description": "要記住的內容，保留倬的原話重點",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic",
+          "content"
+        ]
+      }
+    },
+    {
+      "examples": [
+        "忘記保單那件事",
+        "把車位那筆刪掉",
+        "不用記 Wi-Fi 了"
+      ],
+      "name": "fact_forget",
+      "description": "刪除一件記住的事。一律先確認。",
+      "risk": "destructive",
+      "title": "忘記",
+      "params": {
+        "type": "object",
+        "properties": {"topic": {
+          "description": "主題，可不完整",
+          "type": "string"
+        }},
+        "required": ["topic"]
+      }
+    },
+    {
+      "examples": [
+        "刪掉林小姐的名片",
+        "把舊除濕機說明書刪掉",
+        "刪除那張保固單"
+      ],
+      "name": "item_delete",
+      "description": "刪除一筆名片、說明書、保固單或健檢報告。一律先確認，10 秒內可在 APP 復原。",
+      "risk": "destructive",
+      "title": "刪除資料",
+      "params": {
+        "type": "object",
+        "properties": {"title": {
+          "description": "資料名稱或人名，可不完整",
+          "type": "string"
+        }},
+        "required": ["title"]
+      }
+    },
+    {
+      "examples": [
+        "備份資料包",
+        "匯出資料包",
+        "把資料包備份起來"
+      ],
+      "name": "backup_export",
+      "description": "打開備份畫面，匯出全部文字資料。",
+      "risk": "reversible",
+      "title": "備份資料包",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "examples": [
+        "從備份還原資料包",
+        "匯入資料包備份",
+        "還原資料包"
+      ],
+      "name": "backup_import",
+      "description": "打開還原畫面，從備份檔匯入。一律先確認。",
+      "risk": "destructive",
+      "title": "還原資料包",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  ]
+}
