@@ -15,7 +15,7 @@
 - [x] 照片 APP「送到資料包」：`hoonsor/APK-Photo` 分支 `feat/send-to-datapack`，未合併
 - [x] 電腦網頁已部署（被 Vercel 部署保護擋住，見下一步）
 - [ ] 共用簽章：倬要把 repo 加進腳本並執行
-- [ ] 語音總控說明書：內容已寫好（docs/manual-chapter.md），等確認沒有 session 在改 APK-VoiceHub
+- [x] 語音總控說明書：`hoonsor/APK-VoiceHub` 分支 `docs/manual-datapack`（基底 feat/project-planning），未合併
 - [ ] 實機：真實名片與說明書走完拍照、清晰化、抽取、語音查詢、回原圖
 - [ ] OCR 基準（真實名片 20 張）、查詢基準 30 題
 - [ ] 新增第 6 種資料包只加設定（單元測試已過，實機未測）
@@ -30,7 +30,7 @@
 2. 倬：把 `hoonsor/APK-DataPack` 加進 `36-Claude使用流程改善/setup-hoonsor-signing.ps1` 的清單並執行
 3. 倬：手機裝 LAB 版，登入，填 MiniMax 與 Groq 金鑰，掃真實名片與說明書
 4. AI：依實機回報修；量 OCR 基準；合併 APK-Photo 分支並發版
-5. AI：把 docs/manual-chapter.md 併進語音總控 `docs/manual/MANUAL.md`，然後刪掉這份
+5. AI：把 APK-VoiceHub 的 `docs/manual-datapack` 合併進它的開發分支（只改 MANUAL.md；63 號在 feat/vocab-hub 改程式，不衝突）
 
 ## 🐛 已知問題 / 踩坑
 - Raphael_Evaluation 留有 146 MB 的 Groonga 殘留檔：資料庫顯示 158 MB，實際資料表 12 MB。擴充已移除，`pgroonga_database_remove()` 跑完大小沒變，MCP 的 postgres 不是超級使用者。不影響功能，只佔 500 MB 額度。沒有重試
