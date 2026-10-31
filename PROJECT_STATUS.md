@@ -6,30 +6,50 @@
 - [x] PRD 訪談與定案（docs/PRD.md）
 - [x] 版面方案，倬選 A 首頁＋B 查詢頁
 - [x] 11 個語音動作，倬確認
-- [x] MODULE_PLAN
+- [x] MODULE_PLAN（含實際結果）
 - [x] Supabase 資料表、RLS、白名單
-- [x] 領域邏輯與單元測試
-- [ ] 模擬器畫面驗證
-- [ ] GitHub repo、CI、共用簽章
-- [ ] 語音總控說明書新章（等 `voice-filler` 確認）
-- [ ] 照片 APP「送到資料包」
-- [ ] 電腦網頁
-- [ ] 每晚本機匯出
-- [ ] 實機：真實名片與說明書走完全程
-- [ ] OCR 基準（真實名片 20 張）
+- [x] 擷取、防呆、抽取、去重、查詢、語音動作、備份、Log、健康檢查、資料包設定編輯
+- [x] 單元測試 31 項（APP）、5 項（網頁）；CI 通過
+- [x] 模擬器：首頁、查詢、待確認、清單、單筆；OCR 與公務防呆實測（虛構圖片）
+- [x] GitHub repo（公開）
+- [x] 照片 APP「送到資料包」：`hoonsor/APK-Photo` 分支 `feat/send-to-datapack`，未合併
+- [x] 電腦網頁已部署（被 Vercel 部署保護擋住，見下一步）
+- [ ] 共用簽章：倬要把 repo 加進腳本並執行
+- [ ] 語音總控說明書：內容已寫好（docs/manual-chapter.md），等確認沒有 session 在改 APK-VoiceHub
+- [ ] 實機：真實名片與說明書走完拍照、清晰化、抽取、語音查詢、回原圖
+- [ ] OCR 基準（真實名片 20 張）、查詢基準 30 題
+- [ ] 新增第 6 種資料包只加設定（單元測試已過，實機未測）
 
 ## 🕘 版本歷程
 | 版本 | 日期 | commit | 變更 | 為什麼 |
 |---|---|---|---|---|
-| v0.1.0 | 2026-10-31 | 初始 | 骨架、資料表、擷取、查詢、語音動作、畫面 | 第一版 |
+| v0.1.0 | 2026-10-31 | a119b51 起 | 第一版：5 個資料包、擷取到查詢全流程、電腦網頁 | 倬要拍了就歸檔、用說的查 |
 
 ## ➡️ 下一步
-1. 模擬器驗證畫面
-2. 建 repo、CI
+1. 倬：關掉 datapack-web 的 Vercel Authentication（Project Settings › Deployment Protection）
+2. 倬：把 `hoonsor/APK-DataPack` 加進 `36-Claude使用流程改善/setup-hoonsor-signing.ps1` 的清單並執行
+3. 倬：手機裝 LAB 版，登入，填 MiniMax 與 Groq 金鑰，掃真實名片與說明書
+4. AI：依實機回報修；量 OCR 基準；合併 APK-Photo 分支並發版
+5. AI：把 docs/manual-chapter.md 併進語音總控 `docs/manual/MANUAL.md`，然後刪掉這份
 
 ## 🐛 已知問題 / 踩坑
-- Raphael_Evaluation 留有 146 MB 的 Groonga 殘留檔（見 AGENTS.md）
+- Raphael_Evaluation 留有 146 MB 的 Groonga 殘留檔：資料庫顯示 158 MB，實際資料表 12 MB。擴充已移除，`pgroonga_database_remove()` 跑完大小沒變，MCP 的 postgres 不是超級使用者。不影響功能，只佔 500 MB 額度。沒有重試
+- 說明書同型號補拍是接在後面，還沒依印刷頁碼排序，也還沒比「重複頁留較清晰者」，只略過文字完全相同的頁（PRD F09 未完全做到）
+- `jv_pack_versions` 表已建，APP 尚未寫入舊版設定
+- 直式名片與手寫內容的 OCR 未測
+- 語音動作只過 JVM 測試，還沒從語音總控實際呼叫
 
 ## ♻️ 可回收候選
+<!-- 介面穩定、實機用過後才勾選 -->
+- [ ] Kotlin 個資遮罩｜app/src/main/java/tw/hoonsor/kit/pii/TwPii.kt｜MODULE_PLAN 預定：其他 Android APP 的 Log 遮罩（等實機驗證）
+- [ ] Kotlin LLM JSON 修復｜app/src/main/java/tw/hoonsor/kit/llm/LlmJson.kt｜MODULE_PLAN 預定：42 號與之後的 Android APP（等實機驗證）
 
 ## 🔁 交接紀錄
+### 2026-10-31｜電腦 A
+- **完成**：PRD、版面、語音動作經倬確認；Supabase `jv_` 資料表；APP v0.1.0；照片 APP 分支；電腦網頁部署
+- **決定＋原因**：新 APP＋30 號送件（30 號沒有 Gradle 且承諾照片不經網路）；語音與抽取可經 MiniMax 國際版（倬決定）；檢索改 `ILIKE`（`pgroonga` 佔 146 MB）；每晚匯出沿用 62 號
+- **放棄＋原因**：`pgroonga`（額度）；向量檢索（多一個供應商，等基準題庫證明需要）；感知雜湊去重（同模板不同人的名片太像，改用 sha256＋比對鍵）；另寫每晚匯出（62 號已涵蓋）
+- **未完成**：見「下一步」。完成定義的實機部分都還沒做
+- **下一步**：見上
+- **環境注意**：`data/raw/` 有 migration 前備份（不進 Git）；模擬器 Medium_Phone_API_37.0 用 LAB 預覽模式測畫面；新環境變數名稱（web）：`NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`、`AUTH_ALLOWED_EMAILS`；APP 的 AI 金鑰由倬在手機填，不在 repo
+- **網址**：https://hoonsor-datapack.vercel.app ；前一版 https://datapack-ipd52knoa-hoonsors-projects.vercel.app
