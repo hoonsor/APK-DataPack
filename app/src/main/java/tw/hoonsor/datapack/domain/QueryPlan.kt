@@ -58,10 +58,11 @@ object Query {
     /** AI 連不上時的備援：把問句切成關鍵字，每個資料包都找 */
     fun fallbackPlan(question: String, packs: List<PackConfig>): QueryPlan {
         var s = question
-        STOP.forEach { s = s.replace(it, " ") }
+        // 欄位名稱是在問「要哪一欄」，不是檢索詞：「會計師電話」要找的是會計師
+        (STOP + packs.flatMap { p -> p.fields.map { it.label } }).sortedByDescending { it.length }.forEach { s = s.replace(it, " ") }
         val words = s.split(Regex("[\\s，。？?！!、：:]+")).map { it.trim() }.filter { it.length >= 2 }
         val q = question
-        val match = packs.filter { p -> q.contains(p.name) || (p.key == "business_card" && Regex("廠商|電話|聯絡|公司").containsMatchIn(q)) }
+        val match = packs.filter { p -> q.contains(p.name) || (p.key == "business_card" && Regex("廠商|電話|手機|聯絡|公司").containsMatchIn(q)) }
         return QueryPlan(match.ifEmpty { packs }.map { it.key }, words)
     }
 

@@ -221,6 +221,12 @@ class DomainTest {
         assertTrue(p.keywords.any { it.contains("文具") })
     }
 
+    @Test fun fallbackPlanDropsFieldNames() {
+        val p = Query.fallbackPlan("會計師電話", BuiltinPacks.all)
+        assertEquals(listOf("business_card"), p.packs)
+        assertEquals(listOf("會計師"), p.keywords)
+    }
+
     @Test fun parsePlanDropsUnknownPacksAndOps() {
         val p = Query.parsePlan("""{"packs":["business_card","ghost"],"keywords":["文具"],"filters":[{"field":"x","op":"drop","value":"1"}]}""", BuiltinPacks.all, "q")
         assertEquals(listOf("business_card"), p.packs)

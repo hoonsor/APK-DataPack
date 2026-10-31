@@ -132,7 +132,7 @@ data class PackCount(val packKey: String, val n: Int)
 @Dao
 interface PackDao {
     // ---------- packs ----------
-    @Query("select * from packs where deleted = 0 order by name")
+    @Query("select * from packs where deleted = 0 order by key")
     fun packsFlow(): Flow<List<PackEntity>>
 
     @Query("select * from packs where deleted = 0")
