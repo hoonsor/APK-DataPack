@@ -1,6 +1,6 @@
 # 賈維斯資料包（APK-DataPack）
 
-> 目前版本：v0.1.0 ｜ 最後更新：2026-10-31
+> 目前版本：v0.1.0 ｜ 最後更新：2026-11-03
 
 ## ✅ 任務進度
 - [x] PRD 訪談與定案（docs/PRD.md）
@@ -12,10 +12,10 @@
 - [x] 單元測試 31 項（APP）、5 項（網頁）；CI 通過
 - [x] 模擬器：首頁、查詢、待確認、清單、單筆；OCR 與公務防呆實測（虛構圖片）
 - [x] GitHub repo（公開）
-- [x] 照片 APP「送到資料包」：`hoonsor/APK-Photo` 分支 `feat/send-to-datapack`，未合併
+- [x] 照片 APP「送到資料包」：已合進 `hoonsor/APK-Photo` main（v1.4.0 測試版，2026-11-03），tag 等實機測過
 - [x] 電腦網頁已部署（被 Vercel 部署保護擋住，見下一步）
-- [ ] 共用簽章：倬要把 repo 加進腳本並執行
-- [x] 語音總控說明書：`hoonsor/APK-VoiceHub` 分支 `docs/manual-datapack`（基底 feat/project-planning），未合併
+- [ ] 共用簽章：repo 已加進腳本清單（2026-11-03），等倬執行
+- [x] 語音總控說明書：已在 `hoonsor/APK-VoiceHub` main（2026-11-03 合併）
 - [ ] 實機：真實名片與說明書走完拍照、清晰化、抽取、語音查詢、回原圖
 - [ ] OCR 基準（真實名片 20 張）、查詢基準 30 題
 - [ ] 新增第 6 種資料包只加設定（單元測試已過，實機未測）
@@ -27,10 +27,10 @@
 
 ## ➡️ 下一步
 1. 倬：關掉 datapack-web 的 Vercel Authentication（Project Settings › Deployment Protection）
-2. 倬：把 `hoonsor/APK-DataPack` 加進 `36-Claude使用流程改善/setup-hoonsor-signing.ps1` 的清單並執行
-3. 倬：手機裝 LAB 版，登入，填 MiniMax 與 Groq 金鑰，掃真實名片與說明書
-4. AI：依實機回報修；量 OCR 基準；合併 APK-Photo 分支並發版
-5. AI：把 APK-VoiceHub 的 `docs/manual-datapack` 合併進它的開發分支（只改 MANUAL.md；63 號在 feat/vocab-hub 改程式，不衝突）
+2. 倬：在 A 電腦執行 `36-Claude使用流程改善/setup-hoonsor-signing.ps1`（清單已加入本 repo，要輸入既有金鑰密碼）。完成後 `gh secret list -R hoonsor/APK-DataPack` 應有 4 個 `SIGNING_*`
+3. AI：確認 Secrets 後重跑 main 的 CI，核對 APK 簽章指紋與其他 APP 相同，再推 `v0.1.0` tag 發正式版（沒有 Secrets 時 CI 會用 debug 簽章，不可發正式版）
+4. 倬：手機用 Obtainium 裝正式版（舊的 debug 簽章版要先備份、解除安裝），登入，填 MiniMax 與 Groq 金鑰，掃真實名片與說明書，再用語音總控問「有沒有文具相關的廠商」
+5. AI：依實機回報修；量 OCR 基準；照片 APP 實機測過後推 `v1.4.0` tag
 
 ## 🐛 已知問題 / 踩坑
 - Raphael_Evaluation 留有 146 MB 的 Groonga 殘留檔：資料庫顯示 158 MB，實際資料表 12 MB。擴充已移除，`pgroonga_database_remove()` 跑完大小沒變，MCP 的 postgres 不是超級使用者。不影響功能，只佔 500 MB 額度。沒有重試
@@ -45,6 +45,12 @@
 - [ ] Kotlin LLM JSON 修復｜app/src/main/java/tw/hoonsor/kit/llm/LlmJson.kt｜MODULE_PLAN 預定：42 號與之後的 Android APP（等實機驗證）
 
 ## 🔁 交接紀錄
+### 2026-11-03｜電腦 A
+- **完成**：簽章腳本清單加入本 repo；APK-Photo 分支快轉合併進 main 並改 v1.4.0；APK-VoiceHub 的說明書已在 main
+- **決定＋原因**：v0.1.0 tag 等 Secrets 寫好才推，避免發出 debug 簽章的正式版（語音總控要同簽章才能呼叫）
+- **未完成**：倬執行簽章腳本、發正式版、實機
+- **環境注意**：簽章腳本在 `D:\01-Project\36-Claude使用流程改善`（不是 Git repo），金鑰只在 A 的 `%USERPROFILE%\hoonsor-signing`
+
 ### 2026-10-31｜電腦 A
 - **完成**：PRD、版面、語音動作經倬確認；Supabase `jv_` 資料表；APP v0.1.0；照片 APP 分支；電腦網頁部署
 - **決定＋原因**：新 APP＋30 號送件（30 號沒有 Gradle 且承諾照片不經網路）；語音與抽取可經 MiniMax 國際版（倬決定）；檢索改 `ILIKE`（`pgroonga` 佔 146 MB）；每晚匯出沿用 62 號
