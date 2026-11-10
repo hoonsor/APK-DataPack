@@ -66,6 +66,13 @@
 
         <receiver android:name=".update.UpdateInstallReceiver" android:exported="false" />
 
+        <!-- 每日自動備份（hoonsor-kit android-auto-backup）：寫到 Documents/HoonsorBackup/DataPack/（LAB 版 DataPack-LAB），Dropsync 同步到 Dropbox -->
+        <meta-data android:name="tw.hoonsor.backup.SOURCE" android:value="tw.hoonsor.datapack.backup.DataPackBackupSource" />
+        <service
+            android:name="tw.hoonsor.backup.BackupJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <!-- Agent API：語音總控用來查詢與新增 -->
         <provider
             android:name=".agent.AgentProvider"

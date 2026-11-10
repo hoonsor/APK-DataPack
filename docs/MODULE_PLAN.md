@@ -26,6 +26,7 @@
 | F20 | 電腦網頁 | 模組 supabase-email-otp、pwa-shell、vercel-dotenvx-deploy；參考 todo-web | 安裝 | < 20% | 否 | 完成 |
 | F21 | 離線補跑 | 專案 57 | 沿用 WorkManager＋本機佇列 | - | 否 | 完成 |
 | F22 | 備份四件套 | 專案 42、57 規範 | 新寫 | - | 否 | 完成 |
+| F22 | 每日自動備份（含原圖） | 模組 android-auto-backup 1.0.0 | 安裝＋寫 Source；zip 改成固定輸出（BackupZip） | 小 | BackupZip 可併入模組當範例 | 完成（待實機） |
 | F23 | Log | 自寫 | 新寫（Android 無對應模組） | - | 否 | 完成 |
 | F24 | 健康檢查、AI 設定 | 專案 42 | 參考後自寫 | - | 否 | 完成 |
 | F25 | Agent API | 專案 42 共用 SDK | 複製不修改 | 0% | 否 | 已裝 |

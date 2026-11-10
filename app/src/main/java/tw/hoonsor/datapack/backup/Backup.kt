@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,12 +19,11 @@ import java.io.File
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
 /**
- * 備份（F22）：zip 內有 backup.json，可選含原圖。
+ * 備份（F22）：zip 內有 backup.json，可選含原圖（images/）。格式見 [BackupZip]。
+ * 每日自動備份見 [DataPackBackupSource]（hoonsor-kit android-auto-backup）。
  * 匯入前自動備份一份到 APP 私有資料夾，可「復原到匯入前」。
  */
 object Backup {
@@ -36,41 +36,47 @@ object Backup {
     private fun beforeImport(ctx: Context) = File(ctx.filesDir, "before-import.zip")
     fun hasBeforeImport(ctx: Context) = beforeImport(ctx).exists()
 
-    private suspend fun snapshot(): JSONObject {
-        val j = JSONObject().put("schema", SCHEMA).put("app", "tw.hoonsor.datapack").put("version", BuildConfig.VERSION_NAME).put("exportedAt", Instant.now().toString())
-        j.put("packs", JSONArray(dao.packs().map { p ->
+    /**
+     * stable＝自動備份用：不寫匯出時間、各表依 id 排序，同樣的資料每次輸出都一樣（見 [BackupZip]）。
+     * 手動匯出也一起排序，只多寫一個 exportedAt。
+     */
+    private suspend fun snapshot(stable: Boolean, items: List<ItemEntity>, sources: List<SourceEntity>, dataAt: Long): JSONObject {
+        val j = JSONObject().put("schema", SCHEMA).put("app", "tw.hoonsor.datapack").put("version", BuildConfig.VERSION_NAME)
+            .put("dataAt", Instant.ofEpochMilli(dataAt).toString())
+        if (!stable) j.put("exportedAt", Instant.now().toString())
+        j.put("packs", JSONArray(dao.packs().sortedBy { it.id }.map { p ->
             JSONObject().put("id", p.id).put("key", p.key).put("name", p.name).put("shape", p.shape).put("config", JSONObject(p.config)).put("version", p.version).put("enabled", p.enabled)
         }))
-        j.put("items", JSONArray(dao.allItems().map { i ->
+        j.put("items", JSONArray(items.map { i ->
             JSONObject().put("id", i.id).put("packKey", i.packKey).put("title", i.title).put("fields", JSONObject(i.fields)).put("summary", i.summary)
                 .put("searchText", i.searchText).put("status", i.status).put("confidence", i.confidence.toDouble()).put("reviewReasons", i.reviewReasons)
                 .put("dedupeKeys", i.dedupeKeys).put("pageCount", i.pageCount).put("capturedAt", i.capturedAt)
         }))
-        j.put("sources", JSONArray(dao.allSources().map { s ->
+        j.put("sources", JSONArray(sources.map { s ->
             JSONObject().put("id", s.id).put("itemId", s.itemId).put("pageNo", s.pageNo).put("sha256", s.sha256).put("localName", s.localName)
                 .put("kind", s.kind).put("width", s.width).put("height", s.height).put("ocr", s.ocr).put("blocks", s.blocks)
         }))
-        j.put("chunks", JSONArray(dao.allChunks().map { c ->
+        j.put("chunks", JSONArray(dao.allChunks().sortedBy { it.id }.map { c ->
             JSONObject().put("id", c.id).put("itemId", c.itemId).put("sourceId", c.sourceId).put("pageNo", c.pageNo).put("seq", c.seq).put("text", c.text).put("blockIds", c.blockIds)
         }))
         return j
     }
 
-    private suspend fun writeZip(ctx: Context, out: java.io.OutputStream, withImages: Boolean) {
-        ZipOutputStream(out).use { z ->
-            z.putNextEntry(ZipEntry("backup.json"))
-            z.write(snapshot().toString().toByteArray(Charsets.UTF_8))
-            z.closeEntry()
-            if (withImages) dao.allSources().filter { it.kind == SourceEntity.KIND_IMAGE && it.localUri.isNotBlank() }.forEach { s ->
-                runCatching {
-                    ctx.contentResolver.openInputStream(Uri.parse(s.localUri))?.use { input ->
-                        z.putNextEntry(ZipEntry("images/${s.localName}"))
-                        input.copyTo(z)
-                        z.closeEntry()
-                    }
-                }
-            }
+    private suspend fun writeZip(ctx: Context, out: java.io.OutputStream, withImages: Boolean, stable: Boolean = false) {
+        val items = dao.allItems().sortedBy { it.id }
+        val sources = dao.allSources().sortedBy { it.id }
+        // zip entry 的時間用資料本身的最後修改時間，不用「現在」，否則每次雜湊都不同
+        val dataAt = BackupZip.entryTime(items.map { maxOf(it.updatedAt, it.capturedAt) })
+        val json = snapshot(stable, items, sources, dataAt).toString()
+        val images = if (!withImages) emptyList() else sources.filter { it.kind == SourceEntity.KIND_IMAGE && it.localUri.isNotBlank() }.map { s ->
+            BackupZip.Image(s.localName) { ctx.contentResolver.openInputStream(Uri.parse(s.localUri)) }
         }
+        BackupZip.write(out, json, images, dataAt)
+    }
+
+    /** 每日自動備份（[DataPackBackupSource]）：含原圖、輸出固定，在 JobService 的背景執行緒呼叫 */
+    fun writeAuto(ctx: Context, out: java.io.OutputStream) = runBlocking(Dispatchers.IO) {
+        writeZip(ctx, out, withImages = true, stable = true)
     }
 
     suspend fun export(ctx: Context, uri: Uri, withImages: Boolean) = withContext(Dispatchers.IO) {
@@ -149,4 +155,13 @@ object Backup {
         tw.hoonsor.datapack.sync.SyncWorker.syncSoon(Graph.app)
         return items.size
     }
+}
+
+/** 每日自動備份的來源（AndroidManifest 的 tw.hoonsor.backup.SOURCE 指到這裡）。含原圖：原圖只在手機上 */
+class DataPackBackupSource : tw.hoonsor.backup.AutoBackup.Source {
+    /** LAB 版另放一個資料夾，不跟正式版混在一起 */
+    override fun appName() = if (BuildConfig.FLAVOR == "lab") "DataPack-LAB" else "DataPack"
+    override fun extension() = "zip"
+    override fun mimeType() = "application/zip"
+    override fun write(context: Context, out: java.io.OutputStream) = Backup.writeAuto(context, out)
 }

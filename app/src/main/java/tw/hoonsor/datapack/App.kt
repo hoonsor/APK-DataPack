@@ -65,6 +65,8 @@ class App : Application() {
         super.onCreate()
         Graph.init(this)
         SyncWorker.schedulePeriodic(this)
+        // 每日自動備份（hoonsor-kit android-auto-backup）：開著才排，已排好不重排
+        runCatching { tw.hoonsor.backup.AutoBackup.ensureScheduled(this) }
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
                 Graph.scope.launch { Graph.sync.sync() }

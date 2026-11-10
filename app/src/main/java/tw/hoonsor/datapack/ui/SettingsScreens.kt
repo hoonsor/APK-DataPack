@@ -38,11 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.common.GoogleApiAvailability
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import tw.hoonsor.datapack.BuildConfig
 import tw.hoonsor.datapack.Graph
+import tw.hoonsor.backup.AutoBackup
 import tw.hoonsor.datapack.backup.Backup
+import tw.hoonsor.datapack.backup.DataPackBackupSource
 import tw.hoonsor.datapack.data.PackEntity
 import tw.hoonsor.datapack.domain.FieldDef
 import tw.hoonsor.datapack.domain.FieldType
@@ -142,9 +146,11 @@ fun BackupScreen(nav: Nav) {
             canRestore = Backup.hasBeforeImport(ctx)
         }
     }
-    Column(Modifier.fillMaxSize()) {
-        Header("備份與還原", back = nav.pop)
-        Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Header("備份與還原", back = nav.pop)
+        Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            AutoBackupSection()
+            Text("手動匯出與匯入", color = C.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 8.dp))
             Toggle("備份包含原圖（檔案會變大）", withImages) { withImages = it }
             OutlineButton("匯出到檔案", Modifier.fillMaxWidth(), min = 52.dp) { save.launch(Backup.fileName()) }
             OutlineButton("分享備份檔", Modifier.fillMaxWidth(), min = 52.dp) {
@@ -165,6 +171,41 @@ fun BackupScreen(nav: Nav) {
                 scope.launch { status = runCatching { "已復原 ${Backup.restoreBeforeImport(ctx)} 筆" }.getOrElse { "復原失敗：${it.message}" } }
             }
             status?.let { Text(it, color = C.textSoft, fontSize = 15.sp) }
+        }
+    }
+}
+
+/** 每日自動備份（hoonsor-kit android-auto-backup）：開關、上次備份、立即備份、說明。還原用下面的「從檔案匯入」 */
+@Composable
+private fun AutoBackupSection() {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var on by remember { mutableStateOf(AutoBackup.isEnabled(ctx)) }
+    var busy by remember { mutableStateOf(false) }
+    var msg by remember { mutableStateOf<String?>(null) }
+    val status = remember(on, busy) { AutoBackup.statusText(ctx) }
+    Card {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Toggle("每天自動備份（含原圖）", on) { on = it; AutoBackup.setEnabled(ctx, it) }
+            Text(status, color = C.muted, fontSize = 14.sp)
+            Text(
+                "存到手機的 ${AutoBackup.folder(DataPackBackupSource())}，用 Dropsync 同步到 Dropbox。" +
+                    "原圖只在這支手機上（雲端只存文字），所以自動備份一定含原圖，檔案會比較大。" +
+                    "內容沒變就不另存，只留最近 ${AutoBackup.KEEP} 份。" +
+                    "還原：用下面的「從檔案匯入」選備份檔（目前只還原文字資料；原圖在 zip 的 images/ 資料夾）。",
+                color = C.textSoft, fontSize = 14.sp,
+            )
+            OutlineButton(if (busy) "備份中…" else "立即備份", Modifier.fillMaxWidth(), min = 48.dp) {
+                if (busy) return@OutlineButton
+                busy = true
+                msg = null
+                scope.launch {
+                    val err = withContext(Dispatchers.IO) { AutoBackup.runOnce(ctx, true) }
+                    busy = false
+                    msg = err?.let { "備份失敗：$it" } ?: "已備份：${AutoBackup.lastFile(ctx) ?: ""}"
+                }
+            }
+            msg?.let { Text(it, color = C.textSoft, fontSize = 14.sp) }
         }
     }
 }
