@@ -1,6 +1,6 @@
 # 賈維斯資料包（APK-DataPack）
 
-> 目前版本：v0.2.0（分支 feat/auto-backup，未發布）｜ 最後更新：2026-11-10
+> 目前版本：v0.2.0｜ 最後更新：2026-11-11
 
 ## ✅ 任務進度
 - [x] PRD 訪談與定案（docs/PRD.md）
@@ -29,7 +29,7 @@
 | v0.1.0 | 2026-10-31 | a119b51 起 | 第一版：5 個資料包、擷取到查詢全流程、電腦網頁 | 倬要拍了就歸檔、用說的查 |
 
 ## ➡️ 下一步
-0. 倬：確認並合併 `feat/auto-backup`（v0.2.0），實機驗證每日自動備份後再打 tag 發版
+0. 倬：實機驗證 v0.2.0 每日自動備份（`Documents/HoonsorBackup/DataPack/` 有 zip、內含 images/；Dropsync 有同步到 Dropbox）
 1. 倬：關掉 datapack-web 的 Vercel Authentication（Project Settings › Deployment Protection）
 2. ~~簽章與 v0.1.0 正式版~~（2026-11-06 完成）
 3. 倬：Obtainium 新增 `https://github.com/hoonsor/APK-DataPack`，手機用 Obtainium 裝正式版（舊的 debug 簽章版要先備份、解除安裝），登入，填 MiniMax 與 Groq 金鑰，掃真實名片與說明書，再用語音總控問「有沒有文具相關的廠商」
@@ -57,7 +57,8 @@
   - zip 每次 bytes 相同：entry 時間固定成「資料最後修改時間」（items 的 max(updatedAt, capturedAt)，沒有資料時用 2020-01-01）；自動備份不寫 `exportedAt`（改寫 `dataAt`）；各表與圖片依 id／名稱排序、同名圖只放一次。否則每天雜湊都不同，每天多一份大檔
   - 原圖用 `Deflater.NO_COMPRESSION`（不用 STORED：STORED 要先算 CRC 與大小，每張圖要讀兩次）。JPEG 再壓也小不了，省 CPU 與電
   - 讀圖中途出錯改成整份失敗（以前會吞掉例外，可能寫出壞掉的 zip）；打不開的圖（已從相簿刪掉）仍略過
-- **待倬確認**：自動備份含原圖、經 Dropsync 上 Dropbox，和 AGENTS.md「Never：把圖片送雲端」、README「圖片只留在手機」字面上衝突（名片、健康報告的照片會到 Dropbox）。這次依倬的需求做了，預設開；若確認要這樣，請把 AGENTS.md 的規則改成「不送 Supabase／AI，只到倬自己的 Dropbox 備份」
+- **待倬確認**：自動備份含原圖、經 Dropsync 上 Dropbox，和 AGENTS.md「Never：把圖片送雲端」、README「圖片只留在手機」字面上衝突（名片、健康報告的照片會到 Dropbox）。這次依倬的需求做了，預設開。
+- **2026-11-11 倬決定「含原圖」**：AGENTS.md Never 規則改成「圖片不送 Supabase 或 AI／OCR 雲端，例外是自動備份 zip 只到倬自己的 Dropbox」，README 同步改寫；合併到 main 並發 v0.2.0
 - **未完成**：
   - 匯入只還原文字資料，不會把 zip 裡的 `images/` 放回相簿、也不會補 `localUri`（換機後原圖要手動解壓）
   - 實機驗證：① 設定頁看到狀態，按「立即備份」，`Documents/HoonsorBackup/DataPack/` 出現 zip ② 不改資料再等排程或關開開關，確認沒多一份 ③ Dropsync 有上傳 ④ 用該 zip「從檔案匯入」 ⑤ 原圖多時的檔案大小與耗時（cacheDir 會暫時多一份同大小的檔）

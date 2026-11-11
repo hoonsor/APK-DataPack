@@ -74,4 +74,4 @@ scripts/        每晚本機匯出
 ## Always／Ask／Never
 - **Always**：改程式前 commit；改資料規則先改 `docs/DATA_MODEL.md` 並同步 `web/`；改語音動作遵守相容規則並更新說明書；每版更新 PROJECT_STATUS.md
 - **Ask**：改資料表、刪雲端資料、改套件名、換簽章
-- **Never**：在 APP 放 service role key；實體刪除資料（一律軟刪除）；讓人事資料或公文進系統；把圖片送雲端；`--force` push
+- **Never**：在 APP 放 service role key；實體刪除資料（一律軟刪除）；讓人事資料或公文進系統；把圖片送 Supabase 或任何 AI／OCR 雲端服務（例外：每日自動備份 zip 含原圖，經 Dropsync 只到倬自己的 Dropbox，2026-11-11 倬決定）；`--force` push
